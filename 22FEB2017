@@ -1,0 +1,19 @@
+rm(list = ls())
+library(foreign)
+library(readxl)
+petroleo<- read_excel("/Users/pepeferegrino/Documents/seriesdata/15feb17/petroleo.xlsx")
+petroleo.ts<- ts(petroleo)
+install.packages("tseries")
+library(tseries)
+?acf
+acf(petroleo.ts, lag=20, plot = FALSE)
+acf(petroleo.ts, plot = TRUE)
+#TRANSFORMACION LOGARITMICA
+petroleo.log<-log(petroleo.ts)
+kpss.test(petroleo.log) #Nos permite detectar estacionariedad  
+#KPSS
+#p-value menor 0.05 indica NO estacionariedad
+adf.test(petroleo.log,alternative = "stationary")
+#Dickey Fuller: cuando el p-value es menor a 0.05, datos estacionarios
+#Grafico sinoidal con estadistico///INVESTIGACION
+
