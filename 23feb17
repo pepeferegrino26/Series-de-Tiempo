@@ -1,0 +1,35 @@
+rm(list = ls())
+library(foreign)
+library(readxl)
+#base<- read.dta("/Users/pepeferegrino/Documents/seriesdata/23feb17/base.dta")
+base<-read_excel("/Users/pepeferegrino/Documents/seriesdata/23feb17/base.xlsx")
+?lm
+ls(base)
+View(base)
+#Regresion lineal
+#Guaradar el modelo con una nueva variable 
+#El orden del (lm) es = (y,x)
+base.lm<- lm(peso~talla,base)
+
+#Extraemos los coeficientes (betas)
+betas=coefficients(base.lm); betas
+
+#Coeficiente de determinacion 
+summary(base.lm)$r.squared
+##### 
+#####[1] 0.7868967
+##Se dice que el 78% de la muestra indica que el la talla tiene relacion con el peso por lo cual se ajusta muy bien a una regresion lineal
+
+#Puede establecerse si existe alguna asociacion significativa entre X e Y bajo la hipotesis nula que la
+#Si es menor a 0.05 se rechaza la hipotesis nula 
+#Prueba F
+summary(base.lm)
+
+
+#Valores predichos IC95%
+predict(base.lm,base,interval = "predict",level = 0.95)
+
+#Gráfico de residuos 
+resto <- residuals(base.lm)
+plot(jitter(resto)~jitter(talla), ylab = "RESIDUOS",xlab="talla", data = base)
+abline(0,0,col=2)
