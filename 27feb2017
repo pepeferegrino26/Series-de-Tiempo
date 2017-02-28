@@ -1,0 +1,49 @@
+##Criterio para ajustar tendencias: criterio de juez!!
+rm(list = ls())
+library(foreign)
+library(readxl)
+base<-read_excel("/Users/pepeferegrino/Documents/UAEMex/UAEMEX\ 10º/Series\ de\ Tiempo/ejemplo.xlsx")
+ventas.ts<-ts(base,start = c(2012,1), frequency = 6)
+plot(ventas.ts,xlab="PERIODO DE TIEMPO",ylab="VENTAS EN MILLONES", main="ventas",col=3)
+ventas.descom<- decompose(ventas.ts,"additive")
+####Diagramas de cajas
+cycle(ventas.ts)
+boxplot(ventas.ts~cycle(ventas.ts))
+plot(as.ts(ventas.descom$seasonal))
+plot(as.ts(ventas.descom$trend))
+plot(as.ts(ventas.descom$random))
+plot(ventas.descom)
+###Otra forma de graficar descompisicion 
+par(mfrow=c(1,3))
+plot(ventas.descom$seasonal)
+plot(ventas.descom$trend)
+plot(ventas.descom$random)
+#########
+###EXTRAER TENDENCIA (Tt) CON EL METODO LOOSE, FUNCION(STL)
+ventas1.ts<- ts(base[1:24,1],frequency = 6, start = c(2012,1))
+class(ventas1.ts)
+ventas.stl<- stl(ventas1.ts,s.window = "periodic")
+names(ventas.stl)
+ventas.stl
+
+#tendencia aislada de la serie temporal
+#Traeme los componentes!!!
+ventas.tend<-ventas.stl$time.series[,2]
+ventas.tend
+# LINES DE UN GRAFICO ANTERIOR METE UNA LINEA EL GRAFICO
+plot(ventas1.ts,col="blue", main="ventas en millones de euro",xlab="periodo",ylab="valores de la tendencia")
+lines(ventas.stl$time.series[,2], col="red", ylab="tendencia")
+
+
+
+#######REGRESION CON SERIES DE TIEMPO(Yt) Y una variable predictora(xt)
+#FUNCION (TSLM)
+#Se utiliza para adaptar modelos lineales a series temporales incluyendo componentes de tendencia y estacionalidad
+
+install.packages("forecast")
+library(forecast)
+
+indicators.ts<- ts(gdp,data = indicators)
+indicators.ts<-ts(co2,data = indicators)
+View(indicators.ts)
+plot(indicators.ts)
