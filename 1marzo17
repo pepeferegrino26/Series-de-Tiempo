@@ -1,0 +1,28 @@
+#######REGRESION CON SERIES DE TIEMPO(Yt) Y una variable predictora(xt)
+#FUNCION (TSLM)
+#Se utiliza para adaptar modelos lineales a series temporales incluyendo componentes de tendencia y estacionalidad
+library(readxl)
+indicators<- read_excel("/Users/pepeferegrino/Documents/seriesdata/23feb17/indicators.xlsx")
+install.packages("forecast")
+indicators.ts<- ts(gdp,data = indicators)
+indicators.ts<-ts(co2,data = indicators)
+View(indicators.ts)
+plot(indicators.ts)
+estimado.ts<-tslm(gdp_capita~co2, data = indicators.ts)
+summary(estimado.ts)
+#REGRESION DE OBSERVACIONES ES LA FUNCION LM 
+#Por cada unidad en y creciente existe un 0.02 cambio en x
+#Tenemos un buen ajuste según el p-value y la R
+
+################################################################################
+#Función No Lineal(log-log)
+par(mfrow=c(1,2))
+estimado.ts2<-lm(log(gdp_capita)~log(co2),data = indicators.ts)
+summary(estimado.ts2)
+plot(jitter(gdp_capita)~jitter(co2), xlab="Toneladas de Co2",ylab = "Gross Domestic Product", data = indicators.ts)
+lines(1:54,exp(estimado.ts2$coef[1]+estimado.ts2$coef[2]*log(1:54)))
+plot(log(jitter(gdp_capita))~log(jitter(co2)),xlab="log(co2)", ylab = "log(GDP)",data = indicators.ts)
+abline(estimado.ts2,col="red")
+locator()
+residuos.log<-residuals(estimado.ts2)
+plot(jitter(residuos.log,amount=.005)~jitter(log(co2)),ylab = "residuos", xlab="log(co2)",data = indicators.ts,col="blue")
