@@ -1,0 +1,24 @@
+rm(list = ls())
+library(readxl)
+consumop<- read_excel("/Users/pepeferegrino/Documents/seriesdata/ejemplo3.xlsx")
+library(forecast)
+#frequency= periodos, si es anual es igual a 12
+consumo.ts<-ts(consumop,start = c(1910,1),frequency = 12)
+plot(consumo.ts,xlab="PERIODO DE TIEMPO", ylab="consumo medio de productos",main="CONSUMO MEDIO DE PRODUCTOS")
+#Multiplicativo por que ...
+consumo.descom<-decompose(consumo.ts,"multiplicative")
+cycle(consumo.ts)
+#DETECTANDO PATRON ESTACIONAL
+boxplot(consumo.ts~cycle(consumo.ts))
+x11()
+windows()
+par(mfrow=c(1,3))
+plot(consumo.descom$seasonal)
+plot(consumo.descom$trend)
+plot(consumo.descom$random)
+#EXTRAER TENDENCIA (Tt) CON EL METODO LOOSE, FUNCION(STL)
+consumo.ts<-ts(consumop [1:56,1],frequency = 12,start = c(1910,1))
+class(consumo.ts)
+View(consumo.ts)
+consumo.stl<-stl(consumo.ts, s.window = "periodic")
+####ultima linea no corrio.... 
