@@ -1,0 +1,46 @@
+rm(list = ls())
+library(readxl)
+consumop<- read_excel("/Users/pepeferegrino/Documents/seriesdata/ejemplo3.xlsx")
+library(forecast)
+#frequency= periodos, si es anual es igual a 12
+consumo.ts<-ts(consumop,start = c(1910,1),frequency = 12)
+plot(consumo.ts,xlab="PERIODO DE TIEMPO", ylab="consumo medio de productos",main="CONSUMO MEDIO DE PRODUCTOS")
+#Multiplicativo por que ...
+consumo.descom<-decompose(consumo.ts,"additive")
+cycle(consumo.ts)
+#DETECTANDO PATRON ESTACIONAL
+boxplot(consumo.ts~cycle(consumo.ts))
+x11()
+windows()
+
+plot(as.ts(consumo.descom$seasonal))
+plot(as.ts(consumo.descom$trend))
+plot(as.ts(consumo.descom$random))
+plot(consumo.descom)
+
+par(mfrow=c(1,3))
+plot(consumo.descom$seasonal)
+plot(consumo.descom$trend)
+plot(consumo.descom$random)
+#EXTRAER TENDENCIA (Tt) CON EL METODO LOOSE, FUNCION(STL)
+##Los picos en las graficas significas componentes estacionales!!!!
+consumo.ts<-ts(consumop [1:56,1],frequency = 12,start = c(1910,1), end = c(1915,8))
+cycle(consumo.ts)
+class(consumo.ts)
+View(consumo.ts)
+dim(consumop)
+consumo.stl<-stl(consumo.ts, s.window = "periodic",robust = T)
+#Robust es para cerrar el ciclo 
+consumo.stl
+consumo.tend<- consumo.stl$time.series[,2]
+consumo.tend
+plot(consumo.ts,xlab="Periodo",ylab="Tendencia", main="Consumo de productos", col="blue")
+lines(consumo.stl$time.series[,2],col="Red",ylab="Tendencia")
+###Eliminar tendencia (Tt) de Yt!!!!!!!!!!!!!!!!
+consumo.ntend=consumo.ts-consumo.descom$trend
+plot(as.ts(consumo.ntend), col="red")
+
+par(mfrow=c(1,2))
+plot((consumo.ts),col="blue")
+plot((consumo.ntend),col="red")
+###Graficamente los datos no tienen tendencia!!!!
