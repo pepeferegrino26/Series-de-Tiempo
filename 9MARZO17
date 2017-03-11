@@ -1,0 +1,26 @@
+library(readxl)
+library(forecast)
+install.packages("fpp")
+library(fpp)
+ventas <- read_excel("/Users/pepeferegrino/Documents/seriesdata/ma_r.xlsx")
+ventas.ts <- ts(ventas, start=c(1990))
+ma(ventas.ts,order=3)
+ma(ventas.ts,order=5)
+ma(ventas.ts,order=7)
+ma(ventas.ts,order=9)
+
+plot(ventas.ts,main="ventas de la empresa x", ylab="toneladas", xlab="año")
+
+lines(ma(ventas.ts,3),col="red")
+lines(ma(ventas.ts,5),col="blue")
+lines(ma(ventas.ts,7),col="green")
+lines(ma(ventas.ts,9),col="yellow")
+
+#Promedios moviles centrales(promedios de promedios)
+ventas.ts2 <- window(ventas.ts,start=1990)
+ma4 <- ma(ventas.ts2,order=4, centre=FALSE)
+ma4X2 <- ma(ventas.ts2,order=4, centre=TRUE)
+ma4X2
+plot(ventas.ts2, main="ventas de la empresa x", ylab="toneladas", xlab="año")
+lines(ma4,col="blue")
+lines(ma4X2,col="red")
