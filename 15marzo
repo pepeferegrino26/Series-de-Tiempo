@@ -1,0 +1,21 @@
+#PRONOSTICOS
+rm(list = ls())
+#CLASE 15/MARZO
+library("forecast")
+library("fpp")
+library(readxl)
+ventas<-read_excel("/Users/pepeferegrino/Documents/seriesdata/15marzo/ejemplo3.xlsx")
+ventas.ts<-ts(ventas, start = c(2010,1), frequency = 12)
+plot(ventas.ts,xlab="PERIODO", ylab="VENTAS EN MILLONES", main="VENTAS")
+#EXISTE ESTACIONALIDAD
+#METODO DE LA MEDIA(AVERAGE METHOD)
+help("meanf")
+meanf(ventas.ts,h=10)
+#METODO DEL INGENUO####
+#rwf() & naive() //cualquiera de los dos es funcional
+naive(ventas.ts,h=10) #EL INGENUO CON ESTACIONALIDAD 
+rwf(ventas.ts,h=10)
+snaive(ventas.ts,h=10)
+##METODO DERIVA(DRIFT)
+rwf(ventas.ts,h=10,drift = TRUE)
+#VENTAS.TSP <- PRONOSTICOS
