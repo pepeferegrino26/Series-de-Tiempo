@@ -1,0 +1,43 @@
+#####################################             PRONÓSTICOS           #####################################
+rm(list = ls())
+library("forecast")
+library("fpp")
+library(readxl)
+ventas <- read_excel("/Users/pepeferegrino/Documents/seriesdata/15marzo/ejemplo3.xlsx")
+ventas.ts<-ts(ventas, start=c(2010,1), frequency=12)
+plot(ventas.ts, xlab="Periodo",ylab="Ventas en Millones", main="Serie Temporal")
+
+
+##########################       Método de la Media (Average Method)       ##################################
+help(meanf)
+meanf(ventas.ts , h=10)
+
+##########################          Método del Ingenuo (Naive Method)      ##################################
+help(naive)
+naive(ventas.ts, h=10)  
+# naive estacional implica que la serie tiene estacionalidad
+snaive(ventas.ts, h=10)
+rwf(ventas.ts, h=10)
+
+##########################           Método de Deriva (Drift Method)       ##################################
+help(rwf)
+rwf(ventas.ts, h=10, drift=TRUE)
+
+ventas.tsp<-window(ventas.ts, start=c(2010,1), frequency=12)
+ventas.meanf<-meanf(ventas.tsp,h=20)
+ventas.naive<-naive(ventas.tsp,h=20)
+ventas.snaive<-snaive(ventas.tsp,h=20)
+
+plot(ventas.meanf,plot.conf=FALSE, main="Pronósticos del valor de ventas") 
+#plot.conf=grafica intervalos de confianza
+lines(ventas.naive$mean,col=2)
+lines(ventas.snaive$mean,col=3)
+legend("top",lty=2,col=c(4,2,3),legend=c("Método de la Media","Método Naive","Método Naive Estacional"))
+# top=ubicacion de la leyenda en donde va a poner los nombres 
+# lty = que tipo de linea queremos
+
+plot(ventas.meanf,shaded=TRUE, main="Pronósticos del valor de ventas") 
+## shaded =sombre los intervalos de confianza
+lines(ventas.naive$mean,col=2)
+lines(ventas.snaive$mean,col=3)
+legend("top",lty=1,col=c(4,2,3),legend=c("Método de la Media","Método Naive","Método Naive Estacional"))
