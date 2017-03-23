@@ -1,0 +1,18 @@
+#PRONOSTICOS CON REGRESION LINEAL
+rm(list = ls())
+library(forecast)
+library(readxl)
+##archivos con formatos dat se lee con el software 
+base<-read_excel("C://Users//Sala-F25//Desktop//datos//base.xlsx")
+plot(jitter(consumo)~jitter(ingresos), xlab="INGRESOS", ylab = "consumo",data=base)
+estimado<-lm(consumo~ingresos, data=base)
+abline(estimado, col="red")
+summary(estimado)
+#RESIDUOS
+residuos<- residuals(estimado)
+plot((residuos)~jitter(ingresos), ylab="Residuos", xlab="INGRESOS", data = base)
+abline(0,0,col="red")
+#PRONOSTICOS CON REGRESION
+fitted(estimado)[1]
+pronosticos<- forecast(estimado, newdata = data.frame(ingresos=2000))
+plot(pronosticos, xlab = "ingresos", ylab = "consumo")
