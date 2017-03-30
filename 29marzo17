@@ -1,0 +1,30 @@
+rm(list = ls())
+library(forecast)
+library(readxl)
+datos<- read_excel("C://Users//SALA-F22//Desktop//base//base.xlsx")
+consuingreso.ts<- ts(datos)
+View(consuingreso.ts)
+plot(consuingreso.ts)
+regresion<- tslm(consumo~ingresos, data = consuingreso.ts)
+summary(regresion)
+#PRONOSTICOS BASADOS EN ESCENARIOS!!!!!
+pronosticos.lp<- forecast(regresion, newdata = data.frame(ingresos=c(-1,1)))
+summary(pronosticos.lp)
+plot(pronosticos.lp)
+
+
+#pronosticos lineales
+
+datos2<- read_excel("C://Users//SALA-F22//Desktop//base//toneladas.xlsx")
+toneladas.ts<- ts(datos2)
+plot(toneladas.ts)
+pronosticos.lin<- tslm(toneladas.ts~trend)
+pronolin1<- forecast(pronosticos.lin, h=15, level = c(80,95))
+summary(pronolin1)
+plot(pronolin1, ylab="Toneladas de drogacola", xlab="periodo")
+lines(fitted(pronolin1), col="red")
+
+
+###############
+multiple<- read_excel("C://Users//SALA-F22//Desktop//base//multiple.xlsx")
+plot(multiple)
