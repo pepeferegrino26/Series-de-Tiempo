@@ -1,0 +1,74 @@
+rm(list = ls())
+library(forecast)
+library(readxl)
+datos<- read_excel("C://Users//SALA-F22//Desktop//base//base.xlsx")
+consuingreso.ts<- ts(datos)
+View(consuingreso.ts)
+plot(consuingreso.ts)
+regresion<- tslm(consumo~ingresos, data = consuingreso.ts)
+summary(regresion)
+#PRONOSTICOS BASADOS EN ESCENARIOS!!!!!
+pronosticos.lp<- forecast(regresion, newdata = data.frame(ingresos=c(-1,1)))
+summary(pronosticos.lp)
+plot(pronosticos.lp)
+
+
+#pronosticos lineales
+
+datos2<- read_excel("C://Users//SALA-F22//Desktop//base//toneladas.xlsx")
+toneladas.ts<- ts(datos2)
+plot(toneladas.ts)
+pronosticos.lin<- tslm(toneladas.ts~trend)
+pronolin1<- forecast(pronosticos.lin, h=15, level = c(80,95))
+summary(pronolin1)
+plot(pronolin1, ylab="Toneladas de drogacola", xlab="periodo")
+lines(fitted(pronolin1), col="red")
+
+
+###############
+multiple<- read_excel("C://Users//SALA-F22//Desktop//base//multiple.xlsx")
+plot(multiple)
+windows()
+pairs(multiple[,(1:5)])
+
+multiple.log<- data.frame(indice=multiple$indice,
+                          log.ahorro= log(multiple$ahorro+1),
+                          log.ingreso=log(multiple$ingreso+1),
+                          log.bienes=log(multiple$bienes+1),
+                          log.servicios=log(multiple$servicios+1))
+windows()
+pairs(multiple.log[,1:5])
+
+###REGRESIÓN MULTIPLE!!!!!
+
+estimado<- lm(indice~log.ahorro+log.ingreso+log.bienes
+              +log.servicios, data = multiple.log)
+summary(estimado)
+estimado<- step(lm(indice~log.ahorro+log.ingreso+log.bienes
+                   +log.servicios, data = multiple.log))
+summary(estimado)
+#nome///medelo nulo en el AIC
+#EL MODELO QUE MEJOR AJUSTA ES EL QUE 
+#El nodelo Nulo es el modelo que solo valua el intercepto y
+#el modelo saturado es el modelos que dentro de las predictoras 
+#es el mayor numero de predictores
+plot(fitted(estimado), multiple.log$indice,
+     ylab = "Indice", xlab = "Indice Predicho")
+CV(estimado)
+#RESIDUOS PREDICTORES
+estimado<- lm(indice~log.ahorro+log.ingreso+log.bienes
+              +log.servicios,data = multiple.log)
+par(mfrow=c(2,2))
+plot(multiple.log$log.ahorro, residuals(estimado), xlab = "log(ahorros)")
+plot(multiple.log$log.ingreso, residuals(estimado), xlab = "log(ingresos)")
+plot(multiple.log$log.bienes, residuals(estimado), xlab = "log(bienes)")
+plot(multiple.log$log.servicios, residuals(estimado), xlab = "log(servicios)")
+#RESIDUOS-VALORES PREFICTORES
+plot(fitted(estimado), residuals(estimado),
+     xlab = "Indice predicho", ylab = "Residuos")
+
+#EXAMEN
+#componente o descomposicion bajo el modelo clasico
+#fn decompose, stl //unico en r
+#estudiar indice estacional
+
